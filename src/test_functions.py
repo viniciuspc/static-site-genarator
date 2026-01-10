@@ -3,6 +3,7 @@ import unittest
 from textnode import TextNode, TextType
 from functions.text_node_to_html_node import text_node_to_html_node
 from functions.split_nodes_delimiter import split_nodes_delimiter
+from functions.extract_markdown import extract_markdown_images, extract_markdown_links
   
 class TestFunctions(unittest.TestCase):
   def test_text(self):
@@ -151,6 +152,26 @@ class TestSplitNodesDelimiter(unittest.TestCase):
     ]
 
     self.assertEqual(new_nodes, expected)
+
+class TestExtractMarkdown(unittest.TestCase):
+  def test_extract_markdown_images(self):
+    matches = extract_markdown_images(
+        "This is text with an ![image](https://i.imgur.com/zjjcJKZ.png)"
+    )
+    self.assertListEqual([("image", "https://i.imgur.com/zjjcJKZ.png")], matches)
+  
+  def test_extract_markdown_multiple_images(self):
+    text = "This is text with a ![rick roll](https://i.imgur.com/aKaOqIh.gif) and ![obi wan](https://i.imgur.com/fJRm4Vk.jpeg)"
+    
+    expected = [("rick roll", "https://i.imgur.com/aKaOqIh.gif"), ("obi wan", "https://i.imgur.com/fJRm4Vk.jpeg")]
+    
+    self.assertEqual(extract_markdown_images(text), expected)
+
+  def test_extract_link(self):
+    text = "This is text with a link [to boot dev](https://www.boot.dev) and [to youtube](https://www.youtube.com/@bootdotdev)"
+    expected = [("to boot dev", "https://www.boot.dev"), ("to youtube", "https://www.youtube.com/@bootdotdev")]
+    self.assertEqual(extract_markdown_links(text), expected)
+    
 
     
 if __name__ == "__main__":
