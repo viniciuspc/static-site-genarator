@@ -6,6 +6,7 @@ from functions.split_nodes_delimiter import split_nodes_delimiter
 from functions.extract_markdown import extract_markdown_images, extract_markdown_links
 from functions.slipt_nodes_image import split_nodes_image
 from functions.slipt_nodes_link import split_nodes_link
+from functions.text_to_textnodes import text_to_textnodes
   
 class TestFunctions(unittest.TestCase):
   def test_text(self):
@@ -386,7 +387,47 @@ class TestSplitNodesLink(unittest.TestCase):
       ],
       new_nodes
     )
+
+class TestTextToTextnodes(unittest.TestCase):
+  def test_text_to_textnodes(self):
+    nodes = text_to_textnodes("This is **text** with an _italic_ word and a `code block` and an ![obi wan image](https://i.imgur.com/fJRm4Vk.jpeg) and a [link](https://boot.dev)")
     
+    self.assertListEqual(
+          [
+            TextNode("This is ", TextType.PLAIN),
+            TextNode("text", TextType.BOLD),
+            TextNode(" with an ", TextType.PLAIN),
+            TextNode("italic", TextType.ITALIC),
+            TextNode(" word and a ", TextType.PLAIN),
+            TextNode("code block", TextType.CODE),
+            TextNode(" and an ", TextType.PLAIN),
+            TextNode("obi wan image", TextType.IMAGE, "https://i.imgur.com/fJRm4Vk.jpeg"),
+            TextNode(" and a ", TextType.PLAIN),
+            TextNode("link", TextType.LINK, "https://boot.dev"),
+          ],
+          nodes
+    )
+
+  def test_text_to_textnodes_end_text(self):
+    nodes = text_to_textnodes("This is **text** with an _italic_ word and a `code block` and an ![obi wan image](https://i.imgur.com/fJRm4Vk.jpeg) and a [link](https://boot.dev). Nice!")
+    
+    self.assertListEqual(
+          [
+            TextNode("This is ", TextType.PLAIN),
+            TextNode("text", TextType.BOLD),
+            TextNode(" with an ", TextType.PLAIN),
+            TextNode("italic", TextType.ITALIC),
+            TextNode(" word and a ", TextType.PLAIN),
+            TextNode("code block", TextType.CODE),
+            TextNode(" and an ", TextType.PLAIN),
+            TextNode("obi wan image", TextType.IMAGE, "https://i.imgur.com/fJRm4Vk.jpeg"),
+            TextNode(" and a ", TextType.PLAIN),
+            TextNode("link", TextType.LINK, "https://boot.dev"),
+            TextNode(". Nice!", TextType.PLAIN),
+          ],
+          nodes
+    )
+
 
     
 if __name__ == "__main__":
