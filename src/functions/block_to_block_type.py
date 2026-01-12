@@ -1,7 +1,7 @@
 from blocktype import BlockType
 
 def block_to_block_type(block):
-  for i in range(1,6):
+  for i in range(1,7):
     if block.startswith(f"{i*'#'} "):
       return BlockType.HEADING
   

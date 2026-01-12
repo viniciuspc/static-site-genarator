@@ -1,5 +1,6 @@
 import unittest
 
+from functions.markdown_to_html_node import markdown_to_html_node
 from textnode import TextNode, TextType
 from blocktype import BlockType
 from functions.text_node_to_html_node import text_node_to_html_node
@@ -475,10 +476,20 @@ This is the same paragraph on a new line
           )
 
 class TestBlockToBlockType(unittest.TestCase):
-  def test_heading(self):
+  def test_heading_1(self):
     block = "# This is a heading"
     block_type = block_to_block_type(block)
     self.assertEqual(block_type, BlockType.HEADING)
+    
+  def test_heading_6(self):
+    block = "###### This is a heading"
+    block_type = block_to_block_type(block)
+    self.assertEqual(block_type, BlockType.HEADING)
+    
+  def test_heading_7(self):
+    block = "####### This is a paragraph"
+    block_type = block_to_block_type(block)
+    self.assertEqual(block_type, BlockType.PARAGRAPH)
     
   def test_code(self):
     block = """
@@ -547,7 +558,104 @@ This is just a 1 pargraph -
     block_type = block_to_block_type(block)
     self.assertEqual(block_type, BlockType.PARAGRAPH)
   
+
+class TestMarkdownToHtmlNode(unittest.TestCase):
+  def test_paragraphs(self):
+    md = """
+This is **bolded** paragraph
+text in a p
+tag here
+
+This is another paragraph with _italic_ text and `code` here
+
+"""
+
+    node = markdown_to_html_node(md)
+    html = node.to_html()
+    self.assertEqual(
+        html,
+        "<div><p>This is <b>bolded</b> paragraph text in a p tag here</p><p>This is another paragraph with <i>italic</i> text and <code>code</code> here</p></div>",
+    )
     
+  def test_heading(self):
+    md = """
+# This is a **level 1** heading
+
+## This is a _level 2_ heading
+
+### This is a `level 3` heading
+
+#### This is a level 4 heading
+
+##### This is a level 5 heading
+
+###### This is a level 6 heading
+"""
+    node = markdown_to_html_node(md)
+    html = node.to_html()
+    self.assertEqual(
+        html,
+        "<div><h1>This is a <b>level 1</b> heading</h1><h2>This is a <i>level 2</i> heading</h2><h3>This is a <code>level 3</code> heading</h3><h4>This is a level 4 heading</h4><h5>This is a level 5 heading</h5><h6>This is a level 6 heading</h6></div>",
+    )
+
+  def test_codeblock(self):
+      md = """
+```
+This is text that _should_ remain
+the **same** even with inline stuff
+```
+"""
+
+      node = markdown_to_html_node(md)
+      html = node.to_html()
+
+      self.assertEqual(
+          html,
+          "<div><pre><code>This is text that _should_ remain\nthe **same** even with inline stuff\n</code></pre></div>",
+      )
+     
+  def test_quote(self):
+    md = """
+> This is a
+> **multi line**
+> _quote_
+"""
+
+    node = markdown_to_html_node(md)
+    html = node.to_html()
+    self.assertEqual(
+          html,
+          "<div><blockquote><p>This is a</p><p><b>multi line</b></p><p><i>quote</i></p></blockquote></div>",
+      )
+     
+      
+  def test_unordered_list(self):
+    md = """
+- This is an
+- unordered
+- list    
+"""
+
+    node = markdown_to_html_node(md)
+    html = node.to_html()
+    self.assertEqual(
+          html,
+          "<div><ul><li>This is an</li><li>unordered</li><li>list</li></ul></div>",
+      )
+    
+  def test_ordered_list(self):
+    md = """
+1. This is an
+2. unordered
+3. list 40. tests    
+"""
+
+    node = markdown_to_html_node(md)
+    html = node.to_html()
+    self.assertEqual(
+          html,
+          "<div><ol><li>This is an</li><li>unordered</li><li>list 40. tests</li></ol></div>",
+      )
     
 if __name__ == "__main__":
     unittest.main()
