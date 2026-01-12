@@ -7,6 +7,7 @@ from functions.extract_markdown import extract_markdown_images, extract_markdown
 from functions.slipt_nodes_image import split_nodes_image
 from functions.slipt_nodes_link import split_nodes_link
 from functions.text_to_textnodes import text_to_textnodes
+from functions.markdown_to_blocks import markdown_to_blocks
   
 class TestFunctions(unittest.TestCase):
   def test_text(self):
@@ -427,6 +428,49 @@ class TestTextToTextnodes(unittest.TestCase):
           ],
           nodes
     )
+    
+class TestMarkdownToBlocks(unittest.TestCase):
+      def test_markdown_to_blocks(self):
+        md = """
+This is **bolded** paragraph
+
+This is another paragraph with _italic_ text and `code` here
+This is the same paragraph on a new line
+
+- This is a list
+- with items
+"""
+        blocks = markdown_to_blocks(md)
+        self.assertEqual(
+            blocks,
+            [
+                "This is **bolded** paragraph",
+                "This is another paragraph with _italic_ text and `code` here\nThis is the same paragraph on a new line",
+                "- This is a list\n- with items",
+            ],
+        )
+        
+        def test_markdown_to_blocks_multiple_line_bracks(self):
+          md = """
+This is **bolded** paragraph
+
+
+This is another paragraph with _italic_ text and `code` here
+This is the same paragraph on a new line
+
+
+- This is a list
+- with items
+"""
+          blocks = markdown_to_blocks(md)
+          self.assertEqual(
+              blocks,
+              [
+                  "This is **bolded** paragraph",
+                  "This is another paragraph with _italic_ text and `code` here\nThis is the same paragraph on a new line",
+                  "- This is a list\n- with items",
+              ],
+          )
 
 
     
