@@ -1,6 +1,7 @@
 import unittest
 
 from textnode import TextNode, TextType
+from blocktype import BlockType
 from functions.text_node_to_html_node import text_node_to_html_node
 from functions.split_nodes_delimiter import split_nodes_delimiter
 from functions.extract_markdown import extract_markdown_images, extract_markdown_links
@@ -8,6 +9,7 @@ from functions.slipt_nodes_image import split_nodes_image
 from functions.slipt_nodes_link import split_nodes_link
 from functions.text_to_textnodes import text_to_textnodes
 from functions.markdown_to_blocks import markdown_to_blocks
+from functions.block_to_block_type import block_to_block_type
   
 class TestFunctions(unittest.TestCase):
   def test_text(self):
@@ -472,7 +474,80 @@ This is the same paragraph on a new line
               ],
           )
 
+class TestBlockToBlockType(unittest.TestCase):
+  def test_heading(self):
+    block = "# This is a heading"
+    block_type = block_to_block_type(block)
+    self.assertEqual(block_type, BlockType.HEADING)
+    
+  def test_code(self):
+    block = """
+```
+This is a code block
+code here
+more code
+```
+"""
+    block_type = block_to_block_type(block)
+    self.assertEqual(block_type, BlockType.CODE)
+    
+  def test_code_empty(self):
+    block = """
+```
+```
+"""
+    block_type = block_to_block_type(block)
+    self.assertEqual(block_type, BlockType.CODE)
+    
+  def test_quote(self):
+    block = """
+> This is a
+> quote    
+"""
 
+    block_type = block_to_block_type(block)
+    self.assertEqual(block_type, BlockType.QUOTE)
+    
+  def test_unordered_list(self):
+    block = """
+- This is an
+- unordered
+- list    
+"""
+
+    block_type = block_to_block_type(block)
+    self.assertEqual(block_type, BlockType.UNORDERED_LIST)
+    
+  def test_ordered_list(self):
+    block = """
+1. This is an
+2. unordered
+3. list    
+"""
+
+    block_type = block_to_block_type(block)
+    self.assertEqual(block_type, BlockType.ORDERED_LIST)
+    
+  def test_paragraph(self):
+    block = """
+This is just a 1 pargraph -  
+"""
+
+    block_type = block_to_block_type(block)
+    self.assertEqual(block_type, BlockType.PARAGRAPH)
+    
+  def test_paragraph_like_list(self):
+    block = """
+- This is just a 1 
+- pargraph
+> with
+4. other lines  
+"""
+
+    block_type = block_to_block_type(block)
+    self.assertEqual(block_type, BlockType.PARAGRAPH)
+  
+    
     
 if __name__ == "__main__":
     unittest.main()
