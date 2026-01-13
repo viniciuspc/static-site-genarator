@@ -1,3 +1,3 @@
 # /bin/bash
 
-python3 src/main.py "/viniciuspc/static-site-genarator/"
+python3 src/main.py "/static-site-genarator/"
