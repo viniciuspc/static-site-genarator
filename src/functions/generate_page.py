@@ -23,8 +23,9 @@ def generate_page(from_path, template_path, dest_path):
   
   final_html = template.replace("{{ Title }}", title).replace("{{ Content }}", content)
   
-  abs_test_dir = os.path.join(*abs_dest_path.split("/")[0:-1])
-  os.makedirs(abs_test_dir, exist_ok=True)
+  abs_dest_dir = os.path.join("/",*abs_dest_path.split("/")[0:-1])
+  print(abs_dest_dir)
+  os.makedirs(abs_dest_dir, exist_ok=True)
   
   with open(abs_dest_path, "+w") as f:
     f.write(final_html)
