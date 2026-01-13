@@ -11,6 +11,7 @@ from functions.slipt_nodes_link import split_nodes_link
 from functions.text_to_textnodes import text_to_textnodes
 from functions.markdown_to_blocks import markdown_to_blocks
 from functions.block_to_block_type import block_to_block_type
+from functions.extract_title import extract_title
   
 class TestFunctions(unittest.TestCase):
   def test_text(self):
@@ -656,6 +657,64 @@ the **same** even with inline stuff
           html,
           "<div><ol><li>This is an</li><li>unordered</li><li>list 40. tests</li></ol></div>",
       )
+    
+  def test_markdown_with_image(self):
+    md = """
+# Tolkien Fan Club
+
+![JRR Tolkien sitting](/images/tolkien.png)    
+"""
+    node = markdown_to_html_node(md)
+    html = node.to_html()
+    
+    self.assertEqual(
+      html,
+      '<div><h1>Tolkien Fan Club</h1><p><img src="/images/tolkien.png" alt="JRR Tolkien sitting"></img></p></div>'
+    )
+    
+  def test_markdown_with_link(self):
+    md = """
+## Blog posts
+
+- [Why Glorfindel is More Impressive than Legolas](/blog/glorfindel)
+- [Why Tom Bombadil Was a Mistake](/blog/tom)
+- [The Unparalleled Majesty of "The Lord of the Rings"](/blog/majesty)
+"""
+    node = markdown_to_html_node(md)
+    html = node.to_html()
+    
+    self.assertEqual(
+      html,
+      '<div><h2>Blog posts</h2><ul><li><a href="/blog/glorfindel">Why Glorfindel is More Impressive than Legolas</a></li><li><a href="/blog/tom">Why Tom Bombadil Was a Mistake</a></li><li><a href="/blog/majesty">The Unparalleled Majesty of "The Lord of the Rings"</a></li></ul></div>'
+    )
+    
+    
+class TestExtractTitle(unittest.TestCase):
+  def test_single_line(self):
+    m = "# Hello"
+    title = extract_title(m)
+    self.assertEqual(title, "Hello")
+    
+  def test_multiple_lines(self):
+    m = """
+# Tolkien Fan Club
+
+![JRR Tolkien sitting](/images/tolkien.png)
+
+Here's the deal, **I like Tolkien**.
+
+> "I am in fact a Hobbit in all but size."
+>
+> -- J.R.R. Tolkien    
+"""
+    title = extract_title(m)
+    self.assertEqual(title, "Tolkien Fan Club")
+    
+  def test_no_title(self):
+    m = "This markdown has no title"
+    
+    self.assertRaises(Exception,  extract_title(m))
+    
     
 if __name__ == "__main__":
     unittest.main()
