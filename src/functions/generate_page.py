@@ -3,7 +3,7 @@ import os
 from functions.markdown_to_html_node import markdown_to_html_node
 from functions.extract_title import extract_title
 
-def generate_page(from_path, template_path, dest_path):
+def generate_page(from_path, template_path, dest_path, basepath):
   abs_from_path = os.path.abspath(from_path)
   abs_template_path = os.path.abspath(template_path)
   abs_dest_path = os.path.abspath(dest_path)
@@ -21,7 +21,10 @@ def generate_page(from_path, template_path, dest_path):
   content = markdown_to_html_node(markdown).to_html()
   title = extract_title(markdown)
   
-  final_html = template.replace("{{ Title }}", title).replace("{{ Content }}", content)
+  final_html = template.replace("{{ Title }}", title)
+  final_html = final_html.replace("{{ Content }}", content)
+  final_html = final_html.replace('href="/', f"href=\"{basepath}")
+  final_html = final_html.replace('src="/', f"src=\"{basepath}")
   
   abs_dest_dir = os.path.join("/",*abs_dest_path.split("/")[0:-1])
   print(abs_dest_dir)
