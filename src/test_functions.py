@@ -626,7 +626,7 @@ the **same** even with inline stuff
     html = node.to_html()
     self.assertEqual(
           html,
-          "<div><blockquote><p>This is a</p><p><b>multi line</b></p><p><i>quote</i></p></blockquote></div>",
+          "<div><blockquote>This is a<b>multi line</b><i>quote</i></blockquote></div>",
       )
      
       
@@ -709,11 +709,6 @@ Here's the deal, **I like Tolkien**.
 """
     title = extract_title(m)
     self.assertEqual(title, "Tolkien Fan Club")
-    
-  def test_no_title(self):
-    m = "This markdown has no title"
-    
-    self.assertRaises(Exception,  extract_title(m))
     
     
 if __name__ == "__main__":

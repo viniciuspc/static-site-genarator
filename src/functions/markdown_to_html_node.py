@@ -28,7 +28,7 @@ def markdown_to_html_node(markdown):
         pre_node = ParentNode("pre", [code_node])
         children.append(pre_node)
       case BlockType.QUOTE:
-        quote_children = multiline_block_to_children(block, "> ", "p")
+        quote_children = text_to_children(block.replace("\n", "").replace("> ","").replace(">",""))
         quote_node = ParentNode("blockquote", quote_children)
         children.append(quote_node)
       case BlockType.UNORDERED_LIST:
